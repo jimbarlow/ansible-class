@@ -13,77 +13,80 @@
 #   Bare variables
 #   No use of handlers
 
-- name: configuration
-  hosts: all
-  gather_facts: false # remove later! speeds up testing
-  become: true
+- name: Deploy the application
 
-  tasks:
-  - name: enable repos
-    template:
-      src: ./open_three-tier-app.repo
-      dest: /etc/yum.repos.d/open_three-tier-app.repo
-      mode: 0644
+  gather_facts: false # remove later! speeds up testing
+
+- roles
+    - reposetup
+    - deploy haproxy
 
 - name: deploy haproxy
   hosts: frontends
-  gather_facts: false # remove later! speeds up testing
   become: true
 
   tasks:
-  - name: http
+  - name: Needed Packages Installed and Enabled
     package:
-      name: httpie
+      name: "{{ item }}"
       state: latest
+      enabled: True
+      # httpie, HAproxy
+    with_items: "{{ packagelist }}"
+
   - name: install HAProxy
     yum:
       name=haproxy state=latest
+
   - name: enable HAProxy
     service:
       name: haproxy
       state: started
-  - name: configure haproxy
+
+  - name: HAProxy configured
     template:
-      src: ./haproxy.cfg.j2
+      src: templates/haproxy.cfg.j2
       dest: /etc/haproxy/haproxy.cfg
+    notify: restart HAproxy
   - name: restart HAproxy
+    # move to handlers
     service:
       name: haproxy
       state: restarted
 
-
 - name: deploy tomcat
+  # mvove to tomcat deplayment role
   hosts: apps
-  gather_facts: false
   become: true
 
   tasks:
-  - name: install tomcat
+  - name: Tomcat Installed and Enabled 
     package:
       name: tomcat
       state: latest
-  - name: enable tomcat at boot
-    service:
-      name: tomcat
-      enabled: yes
+      enabled: True
+    when: apps in {{ hosts }}
 
-  - name: create ansible tomcat directory
+  - name: Tomcat Directory Created
     file:
       path: /usr/share/tomcat/webapps/ROOT
       state: directory
+    # should start tomcat?
+  - name: restart tomcat
+    # move to handlers
+    service:
+      name: tomcat
+      state: restarted
 
   - name: copy static index.html to tomcat webapps/ansible/index.html
     template:
-      src: index.html.j2
+      src: templates/index.html.j2
       dest: /usr/share/tomcat/webapps/ROOT/index.html
       mode: 0644
+    notify: restart tomcat
 
-  - name: start tomcat
-    service:
-      name: tomcat
-      state: started
 
-- name: index.html on app 1
+- name: index.html on app {{ host }}
   hosts: app1
   gather_facts: false
   become: true
