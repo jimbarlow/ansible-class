@@ -1,0 +1,27 @@
+- name: Tomcat will be installed, enabled and configured
+  yum:
+    pkg: tomcat
+    state: latest
+  service:
+    name: tomcat
+    enabled: True
+    state: started
+- name: Tomcat Directory Created
+  file:
+    path: /usr/share/tomcat/webapps/ROOT
+    state: directory
+  notify: restart tomcat
+- name: copy static index.html to tomcat webapps/ansible/index.html
+  template:
+    src: templates/index.html.j2
+    dest: /usr/share/tomcat/webapps/ROOT/index.html
+    mode: 0644
+  notify: restart tomcat
+
+- name: index.html on application hosts
+  tasks:
+  - name: copy static index.html to tomcat webapps/ansible/index.html
+    template:
+      src: templates/index.html.j2
+      dest: /usr/share/tomcat/webapps/ansible/index.html
+  notify: restart tomcat

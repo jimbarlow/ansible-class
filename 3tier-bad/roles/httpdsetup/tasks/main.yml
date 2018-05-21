@@ -1,0 +1,8 @@
+- name: Apache Deployed and Configured
+  yum:
+    pkg: httpd
+    state: latest
+  service:
+    name: httpd
+    enabled: True
+    state: started

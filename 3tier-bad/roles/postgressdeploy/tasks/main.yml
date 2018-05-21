@@ -1,0 +1,14 @@
+- name: Postgres Deployed
+  become: True
+  yum:
+    pkg: postgresql-server
+    state: latest
+  service:
+    name: postgresql
+    enabled: yes
+    state: started
+  postgresql_db:
+    name: acme
+    state: present
+    encoding: UTF-8
+  # make sure psycop2 module is insalled on this host.
