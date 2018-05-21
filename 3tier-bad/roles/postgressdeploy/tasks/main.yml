@@ -1,12 +1,13 @@
 - name: Postgres Deployed
-  become: True
   yum:
     pkg: postgresql-server
     state: latest
+- name: Postgres started
   service:
     name: postgresql
     enabled: yes
     state: started
+- name: Postgres Database Initialized
   postgresql_db:
     name: acme
     state: present

@@ -13,14 +13,15 @@
 #   Bare variables
 #   No use of handlers
 
+# put pielining into pretasks
+
 - name: Deploy the application through roles
   vars:
   hosts: all
   become: True
-
-- roles:
-    - { role: reposetup }
-    - { role: postgressdeploy, when: {{ inventory_host }} is in {{ appdbs }} }
-    - { role: tomcatsetup, when: {{ inventory_host }} is in {{ apps }} }
-    - { role: haproxy, when: {{ inventory_host }} is in {{ frontends }} }
-    - { role: httpdsetup, when: {{ inventory_host }} is in {{ frontends }} }
+  roles:
+    - { role: reposetup, hosts: all }
+    - { role: postgressdeploy, hosts: appdbs, when: 'inventory_hostname in groups.appdbs' }
+    - { role: tomcatsetup, when: ' inventory_hostname in groups.apps' }
+    - { role: haproxy, when: 'inventory_hostname  in groups.frontends' }
+    - { role: httpdsetup, when: ' inventory_hostname in groups.frontends' }

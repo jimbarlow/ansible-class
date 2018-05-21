@@ -1,9 +1,5 @@
 - name: Repositories enabled
-  hosts: all
-  become: true
-  tasks:
-  - name: enable repos
-    template:
-      src: templates/open_three-tier-app.repo
-      dest: /etc/yum.repos.d/open_three-tier-app.repo
-      mode: 0644
+  template:
+    src: templates/open_three-tier-app.repo
+    dest: /etc/yum.repos.d/open_three-tier-app.repo
+    mode: 0644
