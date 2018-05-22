@@ -1,26 +1,22 @@
 - name: Tomcat installed
   yum:
     pkg: tomcat
-    state: latest
-- name: Tamcat start service
+    state: present
+- name: Tamcat Service Started
   service:
     name: tomcat
     enabled: True
     state: started
+
 - name: Tomcat Directory Created
   file:
     path: /usr/share/tomcat/webapps/ROOT
     state: directory
-  notify: restart tomcat
-- name: Tomcat copy static index.html to tomcat webapps/ansible/index.html
+
+- name: Tomcat copy static index.html to tomcat webapps/ROOT/index.html
   template:
     src: templates/index.html.j2
     dest: /usr/share/tomcat/webapps/ROOT/index.html
     mode: 0644
   notify: restart tomcat
 
-- name: index.html on application hosts
-  template:
-    src: templates/index.html.j2
-    dest: /usr/share/tomcat/webapps/ansible/index.html
-  notify: restart tomcat

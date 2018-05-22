@@ -3,15 +3,15 @@
     pkg: "{{ item }}"
     state: latest
   with_items:
-    - HAProxy 
-    - httpdie
+    - haproxy 
+    - httpie
 - name: enable HAProxy
   service:
-    haproxy:
+    name: haproxy
     state: started
 - name: Configure HAProxy
   template:
     src: templates/haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
-  notify: restart HAProxy
+  notify: restart HAproxy
   
