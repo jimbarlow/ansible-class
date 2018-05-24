@@ -2,12 +2,11 @@
   yum:
     pkg: tomcat
     state: present
-- name: Tamcat Service Started
+- name: Tomcat Service Started
   service:
     name: tomcat
     enabled: True
     state: started
-
 - name: Tomcat Directory Created
   file:
     path: /usr/share/tomcat/webapps/ROOT

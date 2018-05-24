@@ -17,11 +17,11 @@
 
 - name: Deploy the application through roles
   vars:
-  hosts: all
   become: True
+  hosts: all
   roles:
-    - { role: reposetup, hosts: all }
-    - { role: postgressdeploy, hosts: appdbs, when: 'inventory_hostname in groups.appdbs' }
+    - { role: reposetup }
+    - { role: geerlingguy.postgresql, hosts: appdbs, when: 'inventory_hostname in groups.appdbs' }
     - { role: tomcatsetup, when: ' inventory_hostname in groups.apps' }
     - { role: haproxy, when: 'inventory_hostname  in groups.frontends' }
-    - { role: httpdsetup, when: ' inventory_hostname in groups.frontends' }
+#   - { role: httpdsetup, when: ' inventory_hostname in groups.frontends' }
